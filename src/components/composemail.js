@@ -43,7 +43,7 @@ const ComposeEmail = () => {
     axios
       .post(
         `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedSenderEmail}/outbox.json`,
-       message
+        message
       )
       .then((response) => {
         console.log(response);
@@ -59,11 +59,16 @@ const ComposeEmail = () => {
     axios
       .post(
         `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedReceiverEmail}/inbox.json`,
-        message
+        {
+          from: toRef.current.value,
+          subject: subjectRef.current.value,
+          content: editorState.getCurrentContent().getPlainText(),
+          read: false,
+        }
       )
       .then((response) => {
         console.log(response);
-        console.log(sanitizedReceiverEmail)
+        console.log(sanitizedReceiverEmail);
         toRef.current.value = "";
         subjectRef.current.value = "";
         setEditorState("");
