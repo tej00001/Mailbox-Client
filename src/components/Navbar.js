@@ -42,7 +42,11 @@ const NavbarDetails = () => {
               Inbox
             </NavLink>
           )} 
-          
+           {isAuthenticated && (
+            <NavLink to="/sent" className={classes.style} style={{color:"black"}} >
+              Sent box
+            </NavLink>
+          )} 
           {isAuthenticated && (
             <NavLink to="/login" className={classes.style} style={{color:"red"}} onClick={logout}>
               Logout

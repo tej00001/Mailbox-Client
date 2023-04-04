@@ -14,7 +14,7 @@ const Inbox = () => {
     const key = localStorage.getItem("key which is clicked");
     axios
       .patch(
-        `https://mail-box-client-23c51-default-rtdb.firebaseio.com/${sanitizedEmail}/inbox/${key}.json`,
+        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/inbox/${key}.json`,
         { read: true }
       )
       .then((response) => {
@@ -31,6 +31,22 @@ const Inbox = () => {
     localStorage.setItem("key which is clicked", key);
     setIsReadToTrue();
     setSelectedEmail(messages[key]);
+  };
+
+const deleteEmail = (key) => {
+    axios
+      .delete(
+        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox/${key}.json`
+      )
+      .then((response) => {
+        console.log("Email deleted successfully:", response.data);
+        const updatedMessages = { ...messages };
+        delete updatedMessages[key];
+        setMessages(updatedMessages);
+      })
+      .catch((error) => {
+        console.log("Error deleting email:", error);
+      });
   };
 
   useEffect(() => {
@@ -59,21 +75,7 @@ const Inbox = () => {
   const handleClose = () => {
     setSelectedEmail(null);
   };
-  const deleteEmail = (key) => {
-    axios
-      .delete(
-        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox/${key}.json`
-      )
-      .then((response) => {
-        console.log("Email deleted successfully:", response.data);
-        const updatedMessages = { ...messages };
-        delete updatedMessages[key];
-        setMessages(updatedMessages);
-      })
-      .catch((error) => {
-        console.log("Error deleting email:", error);
-      });
-  };
+  
 
   return (
     <div>
