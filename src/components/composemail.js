@@ -43,7 +43,7 @@ const ComposeEmail = () => {
     axios
       .post(
         `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedSenderEmail}/outbox.json`,
-        message
+       message
       )
       .then((response) => {
         console.log(response);
@@ -63,6 +63,7 @@ const ComposeEmail = () => {
       )
       .then((response) => {
         console.log(response);
+        console.log(sanitizedReceiverEmail)
         toRef.current.value = "";
         subjectRef.current.value = "";
         setEditorState("");
