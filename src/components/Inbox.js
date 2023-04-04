@@ -59,6 +59,21 @@ const Inbox = () => {
   const handleClose = () => {
     setSelectedEmail(null);
   };
+  const deleteEmail = (key) => {
+    axios
+      .delete(
+        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox/${key}.json`
+      )
+      .then((response) => {
+        console.log("Email deleted successfully:", response.data);
+        const updatedMessages = { ...messages };
+        delete updatedMessages[key];
+        setMessages(updatedMessages);
+      })
+      .catch((error) => {
+        console.log("Error deleting email:", error);
+      });
+  };
 
   return (
     <div>
@@ -83,6 +98,13 @@ const Inbox = () => {
                     ></span>
                   )}
                   {`${messages[key].to}: ${messages[key].subject} - ${messages[key].content} ${messages[key].read}`}
+                  <Button
+                    variant="outline-danger"
+                    style={{ marginLeft: "60rem" }}
+                    onClick={() => deleteEmail(key)}
+                  >
+                    Delete
+                  </Button>{" "}
                 </div>
               </ListGroup.Item>
             ))}
