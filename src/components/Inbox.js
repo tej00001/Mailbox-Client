@@ -77,12 +77,17 @@ const Inbox = () => {
     setSelectedEmail(null);
   };
 
-
+  const countUnreadMessages = Object.values(messages).reduce((count, message) => {
+    if (messages.read === false) {
+      return count = count+1;
+    }
+    return count;
+  }, 0);
 
   return (
     <div>
       <h3 style={{ color: "white" }}>
-        Inbox --{`(${sanitizedEmail})`}
+        Inbox --{`(${sanitizedEmail}) There are ${countUnreadMessages} unread messages.`}
       </h3>
       <Card className="text-left">
         <ListGroup variant="flush">
