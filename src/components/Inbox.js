@@ -4,23 +4,21 @@ import { Button, Card, ListGroup, Modal } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 const Inbox = () => {
+  const email = localStorage.getItem("email");
+  const sanitizedEmail = email.replace(/[@.]/g, "");
+
   const [messages, setMessages] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState(null);
-
-  const userEmail = localStorage.getItem("email");
-  const sanitizedEmail = userEmail.replace(/[@.]/g, "");
 
   const setIsReadToTrue = () => {
     const key = localStorage.getItem("key which is clicked");
     axios
       .patch(
-        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/inbox/${key}.json`,
+        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox/${key}.json`,
         { read: true }
       )
       .then((response) => {
         console.log("Todo updated successfully:", response.data);
-        // window.location.reload();
-        // setIsEditing(false);
       })
       .catch((error) => {
         console.log("Error updating todo:", error);
@@ -33,7 +31,7 @@ const Inbox = () => {
     setSelectedEmail(messages[key]);
   };
 
-const deleteEmail = (key) => {
+  const deleteEmail = (key) => {
     axios
       .delete(
         `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox/${key}.json`
@@ -50,36 +48,42 @@ const deleteEmail = (key) => {
   };
 
   useEffect(() => {
-    if (!sanitizedEmail) {
-      console.log("Email not found in localStorage");
-      return;
-    }
+    const fetchMessages = () => {
+      axios
+        .get(
+          `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox.json`
+        )
+        .then((response) => {
+          console.log(
+            `logging from local inbox ${JSON.stringify(response.data)}`
+          );
 
-    axios
-      .get(
-        `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/outbox.json`
-      )
-      .then((response) => {
-        console.log(
-          `Logging from local inbox ${JSON.stringify(response.data)}`
-        );
-        if (response.data) {
-          setMessages(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log(`Error getting messages: ${error}`);
-      });
-  }, [sanitizedEmail]);
+          if (response.data) {
+            setMessages(response.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    const intervalId = setInterval(fetchMessages, 500); // fetch messages every 2 seconds
+
+    // Cleanup function to clear the interval when the component unmounts or when the dependency array changes
+    return () => clearInterval(intervalId);
+  }, [sanitizedEmail, deleteEmail, setKeyToLocalStorege]);
 
   const handleClose = () => {
     setSelectedEmail(null);
   };
-  
+
+
 
   return (
     <div>
-      <h3 style={{ color: "white" }}>Inbox-({sanitizedEmail})</h3>
+      <h3 style={{ color: "white" }}>
+        Inbox --{`(${sanitizedEmail})`}
+      </h3>
       <Card className="text-left">
         <ListGroup variant="flush">
           {Object.keys(messages)
@@ -99,15 +103,15 @@ const deleteEmail = (key) => {
                       }}
                     ></span>
                   )}
-                  {`${messages[key].to}: ${messages[key].subject} - ${messages[key].content} ${messages[key].read}`}
-                  <Button
-                    variant="outline-danger"
-                    style={{ marginLeft: "60rem" }}
-                    onClick={() => deleteEmail(key)}
-                  >
-                    Delete
-                  </Button>{" "}
+                  {`${messages[key].to}: subject:${messages[key].subject} ... `}
                 </div>
+                <Button
+                  variant="outline-danger"
+                  style={{ marginLeft: "60rem" }}
+                  onClick={() => deleteEmail(key)}
+                >
+                  Delete
+                </Button>{" "}
               </ListGroup.Item>
             ))}
         </ListGroup>
@@ -122,7 +126,7 @@ const deleteEmail = (key) => {
         </Modal.Header>
         <Modal.Body>
           <p>
-            <strong>To: </strong>
+            <strong>From: </strong>
             {selectedEmail && selectedEmail.to}
           </p>
           <p>

@@ -46,7 +46,7 @@ const ComposeEmail = () => {
         message
       )
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
         toRef.current.value = "";
         subjectRef.current.value = "";
         setEditorState("");
@@ -67,7 +67,7 @@ const ComposeEmail = () => {
         }
       )
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
         console.log(sanitizedReceiverEmail);
         toRef.current.value = "";
         subjectRef.current.value = "";

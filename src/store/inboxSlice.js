@@ -33,7 +33,7 @@ export const fetchMessages = (email) => (dispatch) => {
   const sanitizedEmail = email.replace(/[@.]/g, "");
   axios
     .get(
-      `https://mail-box-client-23c51-default-rtdb.firebaseio.com/${sanitizedEmail}/outbox.json`
+      `https://mailbox-client-7d990-default-rtdb.asia-southeast1.firebasedatabase.app/${sanitizedEmail}/inbox.json`
     )
     .then((response) => {
       const messages = Object.values(response.data).map((message) => ({
